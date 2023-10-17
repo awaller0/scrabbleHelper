@@ -6,31 +6,7 @@
 
 using namespace std;
 
-// Binary search function
-bool prefixSearch(const std::vector<std::string>& words, const std::string& prefix) {
-    int left = 0;
-    int right = words.size() - 1;
 
-    while (left <= right) {
-        int middle = left + (right - left) / 2;
-
-
-        if (words[middle].substr(0,prefix.size()) == prefix) { 
-            return true; // Prefix found
-        }
-
-        // If the target is smaller, search the left half
-        if (words[middle].substr(0,prefix.size()) > prefix) {
-            right = middle - 1;
-        }
-        // If the target is larger, search the right half
-        else {
-            left = middle + 1;
-        }
-    }
-
-    return false; // Word not found
-}
 
 
 class ScrabbleHelper {
@@ -57,6 +33,32 @@ public:
                 letters.push_back(letter);
             }
         }
+
+        // Binary search function for finding the prefix to a word
+vector<string> prefixSearch(const vector <string>& words, const string& prefix) {
+    int left = 0;
+    int right = words.size() - 1;
+
+    while (left <= right) {
+        int middle = left + (right - left) / 2;
+
+
+        if (words[middle].substr(0,prefix.size()) == prefix) { 
+            return true; // Prefix found
+        }
+
+        // If the target is smaller, search the left half
+        if (words[middle].substr(0,prefix.size()) > prefix) {
+            right = middle - 1;
+        }
+        // If the target is larger, search the right half
+        else {
+            left = middle + 1;
+        }
+    }
+
+    return false; // Word not found
+}
 
         void displayLetters(){
             cout << "Your letters are: ";
