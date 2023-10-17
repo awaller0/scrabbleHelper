@@ -38,13 +38,14 @@ public:
 vector<string> prefixSearch(const vector <string>& words, const string& prefix) {
     int left = 0;
     int right = words.size() - 1;
+    vector <string> result;
 
     while (left <= right) {
         int middle = left + (right - left) / 2;
 
 
         if (words[middle].substr(0,prefix.size()) == prefix) { 
-            return true; // Prefix found
+            int i = middle; // Prefix found
         }
 
         // If the target is smaller, search the left half
@@ -57,7 +58,7 @@ vector<string> prefixSearch(const vector <string>& words, const string& prefix) 
         }
     }
 
-    return false; // Word not found
+    return result; // Word not found
 }
 
         void displayLetters(){
