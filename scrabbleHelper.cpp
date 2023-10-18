@@ -3,7 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <cctype>
-
+#include <validWord.h>
 using namespace std;
 
 
@@ -46,6 +46,15 @@ vector<string> prefixSearch(const vector <string>& words, const string& prefix) 
 
         if (words[middle].substr(0,prefix.size()) == prefix) { 
             int i = middle; // Prefix found
+            while (i >= 0 && words[i].substr(0,prefix.size()) == prefix) {
+                result.push_back(words[i]); // Add all the words to the left(in the arr) with the prefix to the result vector
+                i--;
+            }
+            i = middle + 1;
+            while (i < words.size() && words[i].substr(0,prefix.size()) == prefix) {
+                result.push_back(words[i]); // Add all the words with the prefix to the result vector
+                i++;
+            }
         }
 
         // If the target is smaller, search the left half
@@ -58,7 +67,7 @@ vector<string> prefixSearch(const vector <string>& words, const string& prefix) 
         }
     }
 
-    return result; // Word not found
+    return result; // Return all the words that have the prefix, empty vector if none
 }
 
         void displayLetters(){
