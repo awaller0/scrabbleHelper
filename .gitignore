@@ -5,9 +5,9 @@ secrets.json
 *.log
 .idea/
 .vscode/
-obj/
 bin/
 *.tmp
 *.exe
 *.obj
 *.pdb
+*.ilk
