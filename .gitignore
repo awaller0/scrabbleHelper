@@ -1,0 +1,10 @@
+build/
+dist/
+config.ini
+secrets.json
+*.log
+.idea/
+.vscode/
+obj/
+bin/
+*.tmp
