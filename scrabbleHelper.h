@@ -8,10 +8,17 @@ using namespace std;
 #ifndef scrabbleHelper_H
 #define scrabbleHelper_H
 
+// TODO: check if the user's input is valid through checking if the letters are in the alphabet as well as if the letters are in the right format
+// TODO: add function to search if a word contains certain letters in the order typed by the user
+
 class ScrabbleHelper
 {
 private:
-    int findPrefixIndex(const string &prefix) // Binary search to find the index of the prefix
+    vector<string> validWords;
+    vector<string> reversedValidWords;
+    vector<string> userLetters;
+
+    int findPrefixIndex(const string &prefix, const vector<string> &words) // Binary search to find the index of the prefix
     {
         int left = 0;
         int right = validWords.size() - 1;
@@ -20,11 +27,11 @@ private:
         {
             int middle = left + (right - left) / 2;
 
-            if (validWords[middle].substr(0, prefix.size()) == prefix)
+            if (words[middle].substr(0, prefix.size()) == prefix)
             {
                 return middle; // Found an instance of the prefix
             }
-            if (validWords[middle].substr(0, prefix.size()) > prefix)
+            if (words[middle].substr(0, prefix.size()) > prefix)
             {
                 right = middle - 1;
             }
@@ -35,40 +42,57 @@ private:
         }
         return -1;
     }
-    
-    int findSuffixIndex(const string &suffix)
+    vector<string> prefixSearchInternal(const string &prefix, const vector<string> &words)
     {
-        int left = 0;
-        int right = validWords.size() - 1;
-
-        while (left <= right)
+        vector<string> result;
+        int index = findPrefixIndex(prefix, words); // Find the index of the prefix
+        if (index == -1)
         {
-            int middle = left + (right - left) / 2;
-
-            if (validWords[middle].substr((validWords[middle].size()-suffix.size()), validWords[middle].size()) == suffix)
-            {
-                return middle; // Found an instance of the prefix
-            }
-            if (validWords[middle].substr((validWords[middle].size()-suffix.size()), validWords[middle].size()) > suffix)
-            {
-                right = middle - 1;
-            }
-            else
-            {
-                left = middle + 1;
-            }
+            return result; // return empty vector if prefix not found
         }
-        return -1; // Prefix not found
+        int i = index;
+        while (i >= 0 && words[i].substr(0, prefix.size()) == prefix)
+        {
+            result.push_back(words[i]); // Add all the words to the LEFT(in the arr) with the prefix to the result vector
+            i--;
+        }
+
+        i = index + 1;
+        while (i < words.size() && words[i].substr(0, prefix.size()) == prefix)
+        {
+            result.push_back(words[i]); // add all words from the RIGHT(in the arr) with the prefix to the result vector
+            i++;
+        }
+
+        return result; // Return all the words that have the prefix, empty vector if none
     }
-    vector<string> validWords;
-    vector<string> userLetters;
 
 public:
-    ScrabbleHelper() : validWords(), userLetters() {}
-    // TODO: correct suffix search by reversing validwords and then searching for the prefix
-    // TODO: check if the user's input is valid through checking if the letters are in the alphabet as well as if the letters are in the right format
-    // TODO: add function to search if a word contains certain letters in the order typed by the user
-    // TODO: add function to seartch if a word ends with certain letters typed by the user
+    ScrabbleHelper() // constructor
+    {
+        storeAllWords("scrabble_words.csv", validWords);
+        storeAllWords("reverse_scrabble_words.csv", reversedValidWords);
+    }
+
+    void storeAllWords(const string &filename, vector<string> &words) //
+    {
+        ifstream file(filename);
+        if (!file)
+        {
+            cerr << "Error opening file." << endl;
+            return;
+        }
+
+        words.clear();
+        words.reserve(172819);
+        string word;
+
+        while (file >> word)
+        {
+            words.push_back(word);
+        }
+        file.close();
+    }
 
     void readLettersFromUser()
     { // getting the user's letters and storing them in a vector
@@ -82,106 +106,39 @@ public:
             userLetters.push_back(currentLetter);
         }
     }
-    vector<string> suffixSearch(const string &suffix){
-        vector<string> result;
-        int index = findSuffixIndex(suffix);
-        if (index == -1){
-            return result;
-        }
-        int i = index;
-        while (i >= 0 && validWords[i].substr((validWords[i].size()-suffix.size()), validWords[i].size()) == suffix)
+
+    void displayWordsWithPrefix(const string &prefix)
+    {
+        vector<string> words = prefixSearchInternal(prefix, validWords);
+        if (words.empty())
         {
-            result.push_back(validWords[i]); // Add all the words to the LEFT(in the arr) with the prefix to the result vector
-            i--;
+            cout << "No words found with that prefix." << endl;
+            return;
         }
 
-        i = index + 1;
-        while (i < validWords.size() && validWords[i].substr((validWords[i].size()-suffix.size()), validWords[i].size()) == suffix)
+        cout << "Words found with that prefix:" << endl;
+        for (const auto &word : words)
         {
-            result.push_back(validWords[i]); // add all words from the RIGHT(in the arr) with the prefix to the result vector
-            i++;
+            cout << word << endl;
         }
-
-    return result;
-
     }
-    vector<string> prefixSearch(const string &prefix)
+
+    void displayWordsWithSuffix(const string &suffix)
     {
-        vector<string> result;
-        int index = findPrefixIndex(prefix); // Find the index of the prefix
-        if (index == -1)
+        string reversedSuffix = string(suffix.rbegin(), suffix.rend());          // Reverse the suffix EX: user: ing, reversedSuffix://
+        vector<string> words = prefixSearchInternal(reversedSuffix, reversedValidWords); // gni, since the words are stored in reverse order//
+        if (words.empty())
         {
-            return result; // return empty vector if prefix not found
+            cout << "No words with that suffix" << endl;
+            return;
         }
-        int i = index;
-        while (i >= 0 && validWords[i].substr(0, prefix.size()) == prefix)
+
+        cout << "Words found with that suffix" << endl;
+        for (const auto &word : words)
         {
-            result.push_back(validWords[i]); // Add all the words to the LEFT(in the arr) with the prefix to the result vector
-            i--;
+            string reversdWord = string(word.rbegin(), word.rend()); // reversing the words back to normal
+            cout << reversdWord << endl;
         }
-
-        i = index + 1;
-        while (i < validWords.size() && validWords[i].substr(0, prefix.size()) == prefix)
-        {
-            result.push_back(validWords[i]); // add all words from the RIGHT(in the arr) with the prefix to the result vector
-            i++;
-        }
-
-    return result; // Return all the words that have the prefix, empty vector if none
-}
-
-void allValidWords()
-{ // reads all words from the csv file and stores them in a vector
-    ifstream file("scrabble_words.csv");
-    if (!file)
-    {
-        cerr << "Error opening file." << endl;
-        return;
     }
-
-    vector<string> words;
-    words.reserve(172819); // csv file has 172820 words
-    string word;
-
-    while (file >> word)
-    { // Read words into the vector
-        words.push_back(word);
-    }
-
-    file.close();
-
-    validWords = words;
-}
-
-void displayWordsWithPrefix(const vector<string> &words)
-{
-    if (words.empty())
-    {
-        cout << "No words found with that prefix." << endl;
-        return;
-    }
-
-    cout << "Words found with that prefix:" << endl;
-    for (const auto &word : words)
-    {
-        cout << word << endl;
-    }
-}
-
-void displayWordsWithSuffix(const vector<string> &words)
-{
-    if (words.empty())
-    {
-        cout << "No words with that suffix" << endl;
-        return;
-    }
-
-    cout << "Words found with that suffix" << endl;
-    for (const auto &word : words)
-    {
-        cout << word << endl;
-    }
-}
-
 };
 #endif
