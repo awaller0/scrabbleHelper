@@ -1,5 +1,5 @@
 #include "scrabbleHelper.h"
-
+#include <vector>
 int main()
 {
     ScrabbleHelper helper;
@@ -8,7 +8,7 @@ int main()
     return 0;
 }
 
-int ScrabbleHelper::findPrefixIndex(const string &prefix, const vector<string> &words) // Binary search to find the index of the prefix
+int ScrabbleHelper::findPrefixIndex(const std::string &prefix, const std::vector<std::string> &words) // Binary search to find the index of the prefix
 {
     int left = 0;
     int right = validWords.size() - 1;
@@ -32,9 +32,9 @@ int ScrabbleHelper::findPrefixIndex(const string &prefix, const vector<string> &
     }
     return -1;
 }
-vector<string> ScrabbleHelper::prefixSearchInternal(const string &prefix, const vector<string> &words)
+std::vector<std::string> ScrabbleHelper::prefixSearchInternal(const std::string &prefix, const std::vector<std::string> &words)
 {
-    vector<string> result;
+    std::vector<std::string> result;
     int index = findPrefixIndex(prefix, words); // Find the index of the prefix
     if (index == -1)
     {
@@ -62,18 +62,18 @@ ScrabbleHelper::ScrabbleHelper() // constructor
     storeAllWords("scrabble_words.csv", validWords);
     storeAllWords("reverse_scrabble_words.csv", reversedValidWords);
 }
-void ScrabbleHelper::storeAllWords(const string &filename, vector<string> &words) // storing all the words in a vector
+void ScrabbleHelper::storeAllWords(const std::string &filename, std::vector<std::string> &words) // storing all the words in a vector
 {
-    ifstream file(filename);
+    std::ifstream file(filename);
     if (!file)
     {
-        cerr << "Error opening file." << endl;
+        std::cerr << "Error opening file." << std::endl;
         return;
     }
 
     words.clear();
     words.reserve(172819);
-    string word;
+    std::string word;
 
     while (file >> word)
     {
@@ -84,70 +84,70 @@ void ScrabbleHelper::storeAllWords(const string &filename, vector<string> &words
 
 void ScrabbleHelper::readLettersFromUser()
 {
-    cout << "Enter your letters seperate by a space: ";
-    string input;
-    getline(cin, input);
-    istringstream inputStream(input); // using istringstream to seperate the letters
-    string currentLetter;
+    std::cout << "Enter your letters seperate by a space: ";
+    std::string input;
+    getline(std::cin, input);
+    std::istringstream inputStream(input); // using istringstream to seperate the letters
+    std::string currentLetter;
     while (inputStream >> currentLetter)
     { // storing the letters in a the private vector userLetters
         userLetters.push_back(currentLetter);
     }
 }
-void ScrabbleHelper::displayWordsWithPrefix(const string &prefix)
+void ScrabbleHelper::displayWordsWithPrefix(const std::string &prefix)
     {
-        vector<string> words = prefixSearchInternal(prefix, validWords);
+        std::vector<std::string> words = prefixSearchInternal(prefix, validWords);
         if (words.empty())
         {
-            cout << "No words found with that prefix." << endl;
+            std::cout << "No words found with that prefix." << std::endl;
             return;
         }
 
-        cout << "Words found with that prefix:" << endl;
+        std::cout << "Words found with that prefix:" << std::endl;
         for (const auto &word : words)
         {
-            cout << word << endl;
+            std::cout << word << std::endl;
         }
     }
 
-void ScrabbleHelper::displayWordsWithSuffix(const string &suffix)
+void ScrabbleHelper::displayWordsWithSuffix(const std::string &suffix)
     {
-        string reversedSuffix = string(suffix.rbegin(), suffix.rend());                  // Reverse the suffix EX: user: ing, reversedSuffix://
-        vector<string> words = prefixSearchInternal(reversedSuffix, reversedValidWords); // gni, since the words are stored in reverse order //
+        std::string reversedSuffix = std::string(suffix.rbegin(), suffix.rend());                  // Reverse the suffix EX: user: ing, reversedSuffix://
+        std::vector<std::string> words = prefixSearchInternal(reversedSuffix, reversedValidWords); // gni, since the words are stored in reverse order //
         if (words.empty())
         {
-            cout << "No words with that suffix" << endl;
+            std::cout << "No words with that suffix" << std::endl;
             return;
         }
 
-        cout << "Words found with that suffix" << endl;
+        std::cout << "Words found with that suffix" << std::endl;
         for (const auto &word : words)
         {
-            string reversedWord = string(word.rbegin(), word.rend()); // reversing the words back to normal
-            cout << reversedWord << endl;                             // printing the words
+            std::string reversedWord = std::string(word.rbegin(), word.rend()); // reversing the words back to normal
+            std::cout << reversedWord << std::endl;                             // printing the words
         }
     }
 
-void ScrabbleHelper::displayPossibleWords(const string &prefix, const string &suffix)
+void ScrabbleHelper::displayPossibleWords(const std::string &prefix, const std::string &suffix)
     {
         // Step 1: Find all words with the given prefix.
-        vector<string> prefixWords = prefixSearchInternal(prefix, validWords);
+        std::vector<std::string> prefixWords = prefixSearchInternal(prefix, validWords);
 
         // Step 2: Find all words with the given suffix, using reversed order search.
-        string reversedSuffix = string(suffix.rbegin(), suffix.rend());
-        vector<string> suffixWordsTemp = prefixSearchInternal(reversedSuffix, reversedValidWords);
-        vector<string> suffixWords; // This will store the suffix words in the correct order.
+        std::string reversedSuffix = std::string(suffix.rbegin(), suffix.rend());
+        std::vector<std::string> suffixWordsTemp = prefixSearchInternal(reversedSuffix, reversedValidWords);
+        std::vector<std::string> suffixWords; // This will store the suffix words in the correct order.
 
         for (auto &word : suffixWordsTemp)
         {
-            suffixWords.push_back(string(word.rbegin(), word.rend()));
+            suffixWords.push_back(std::string(word.rbegin(), word.rend()));
         }
         // Step 3: Sort the two vectors.
         sort(prefixWords.begin(), prefixWords.end());
         sort(suffixWords.begin(), suffixWords.end());
 
         // Step 4: Intersect the two vectors.
-        vector<string> commonWords;
+        std::vector<std::string> commonWords;
 
 
         set_intersection(prefixWords.begin(), prefixWords.end(),
@@ -156,12 +156,12 @@ void ScrabbleHelper::displayPossibleWords(const string &prefix, const string &su
 
 
 
-        vector<int> userInputFreq = countUserLetters();
-        vector<string> possibleWords;
+        std::vector<int> userInputFreq = countUserLetters();
+        std::vector<std::string> possibleWords;
 
-        for (const string &word : commonWords)
+        for (const std::string &word : commonWords)
         { // Assume validWords is your list of valid Scrabble words
-            vector<int> wordFreq = countWordLetters(word);
+            std::vector<int> wordFreq = countWordLetters(word);
 
             if (isPossibleWord(userInputFreq, wordFreq))
             {
@@ -170,13 +170,13 @@ void ScrabbleHelper::displayPossibleWords(const string &prefix, const string &su
         }
         sort(possibleWords.begin(), possibleWords.end());
         // Display the possible words
-        for (const string &word : possibleWords)
+        for (const std::string &word : possibleWords)
         {
-            cout << word << endl;
+            std::cout << word << std::endl;
         }
     }
 
-bool ScrabbleHelper::isPossibleWord(const vector<int> &userInputFreq, const vector<int> &wordFreq) 
+bool ScrabbleHelper::isPossibleWord(const std::vector<int> &userInputFreq, const std::vector<int> &wordFreq) 
     {
         for (int i = 0; i < 26; i++) 
         {
@@ -188,13 +188,13 @@ bool ScrabbleHelper::isPossibleWord(const vector<int> &userInputFreq, const vect
         return true;
     }
 
-vector<int> ScrabbleHelper::countUserLetters()
+std::vector<int> ScrabbleHelper::countUserLetters()
 {
     // Initialize array with 26 zeros, each index represents a letter from 'a' to 'z'
-    vector<int> letterCount(26, 0);
+    std::vector<int> letterCount(26, 0);
 
     // Iterate over each letter in the user's input
-    for (const string &letter : userLetters)
+    for (const std::string &letter : userLetters)
     {
         // Check if the string is not empty and the first character is a letter
         if (!letter.empty() && isalpha(letter[0]))
@@ -210,9 +210,9 @@ vector<int> ScrabbleHelper::countUserLetters()
     return letterCount;
 }
 
-vector<int> ScrabbleHelper::countWordLetters(const string &word)
+std::vector<int> ScrabbleHelper::countWordLetters(const std::string &word)
     {
-        vector<int> letterCount(26, 0); // Initialize array with 26 zeros
+        std::vector<int> letterCount(26, 0); // Initialize array with 26 zeros
 
         for (char c : word)
         {

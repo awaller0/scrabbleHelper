@@ -5,49 +5,48 @@
 #include <cctype>
 #include <fstream>
 #include <algorithm>
-using namespace std;
-#ifndef scrabbleHelper_H
-#define scrabbleHelper_H
-
+#ifndef SCRABBLEHELPER_H
+#define SCRABBLEHELPER_H
 
 class ScrabbleHelper
 {
 private:
-    vector<string> validWords;
-    vector<string> reversedValidWords;
-    vector<string> userLetters;
+    std::vector<std::string> validWords;
+    std::vector<std::string> reversedValidWords;
+    std::vector<std::string> userLetters;
 
     // Binary search to find the index of the prefix
-    int findPrefixIndex(const string &prefix, const vector<string> &words); 
+    int findPrefixIndex(const std::string &prefix, const std::vector<std::string> &words);
 
     // Return all the words that have the prefix, empty vector if none
-    vector<string> prefixSearchInternal(const string &prefix, const vector<string> &words);
+    std::vector<std::string> prefixSearchInternal(const std::string &prefix, const std::vector<std::string> &words);
 
 public:
     ScrabbleHelper();
 
     // storing all the words in a vector
-    void storeAllWords(const string &filename, vector<string> &words); 
- 
+    void storeAllWords(const std::string &filename, std::vector<std::string> &words);
+
     // getting the user's letters and storing them in a vector
     void readLettersFromUser();
 
     // displaying all the words that contain the prefix
-    void displayWordsWithPrefix(const string &prefix);
+    void displayWordsWithPrefix(const std::string &prefix);
 
     // displaying all the words that contain the suffix
-    void displayWordsWithSuffix(const string &suffix);
+    void displayWordsWithSuffix(const std::string &suffix);
 
     // displaying all the words that contain the prefix and suffix with the user's letters
-    void displayPossibleWords(const string &prefix, const string &suffix);
+    void displayPossibleWords(const std::string &prefix, const std::string &suffix);
 
     // Checks if a word can be formed from the user's input by comparing frequency of each letter.
-    bool isPossibleWord(const vector<int> &userInputFreq, const vector<int> &wordFreq);
+    bool isPossibleWord(const std::vector<int> &userInputFreq, const std::vector<int> &wordFreq);
 
     // Counts the frequency of each letter in the user's input
-    vector<int> countUserLetters();
+    std::vector<int> countUserLetters();
 
     // Counts the frequency of each letter in a word
-    vector<int> countWordLetters(const string &word);
+    std::vector<int> countWordLetters(const std::string &word);
 };
-#endif
+
+#endif // SCRABBLEHELPER_H
